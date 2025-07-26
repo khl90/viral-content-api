@@ -1,74 +1,48 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from pydantic import BaseModel
-import openai
 import os
-from typing import Optional
 
-app = FastAPI(title="Viral Content Generator API")
-
-# Configuration OpenAI
-openai.api_key = os.getenv("OPENAI_API_KEY")
+app = FastAPI()
 
 class ContentRequest(BaseModel):
     niche: str
     topic: str
     platform: str
-    language: Optional[str] = "french"
 
 @app.get("/")
 def root():
-    return {"message": "Viral Content Generator API - Ready!", "status": "online"}
+    return {"message": "API fonctionnelle!", "status": "OK"}
 
 @app.post("/generate")
-async def generate_content(request: ContentRequest):
-    try:
-        # Prompt optimisé pour contenu viral
-        prompt = f"""
-Créer un post {request.platform} viral pour la niche {request.niche} sur le sujet {request.topic}.
+def generate_content(request: ContentRequest):
+    # Version simple pour tester d'abord
+    content = f"""🔥 STOP ! Voici le secret pour dominer {request.niche} sur {request.platform}...
 
-RÈGLES:
-- Commence par un hook puissant qui arrête le scroll
-- Utilise la psychologie de l'engagement (curiosité, controverse, émotion)
-- Structure en paragraphes courts (max 2 lignes)
-- Inclus des éléments de storytelling si approprié
-- Optimisé pour {request.platform}
+Dans le monde du {request.topic}, 90% des gens font cette erreur fatale :
 
-STRUCTURE DEMANDÉE:
-1. Hook (1ère ligne qui accroche)
-2. Contenu principal (valeur, insight, histoire)
-3. Call-to-action engageant
-4. Hashtags pertinents (max 10)
+❌ Ils créent du contenu générique
+❌ Ils ignorent leur audience 
+❌ Ils vendent avant de servir
 
-Niche: {request.niche}
-Sujet: {request.topic}
-Plateforme: {request.platform}
+Voici ma méthode en 3 étapes :
 
-Génère un contenu qui maximise l'engagement et les partages.
-"""
+1️⃣ Identifiez LA douleur précise de votre audience
+2️⃣ Créez une solution unique et actionnable  
+3️⃣ Racontez une histoire personnelle
 
-        # Appel OpenAI
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Tu es un expert en création de contenu viral sur les réseaux sociaux. Tu maîtrises parfaitement les mécaniques d'engagement et de viralité."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=500,
-            temperature=0.8
-        )
-        
-        generated_content = response.choices[0].message.content
-        
-        return {
-            "content": generated_content,
-            "status": "success",
-            "niche": request.niche,
-            "topic": request.topic,
-            "platform": request.platform
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur génération: {str(e)}")
+Résultat : +300% d'engagement garanti !
+
+Essayez et dites-moi en commentaires ! 👇
+
+#{request.niche} #{request.topic} #{request.platform} #business #entrepreneur"""
+
+    return {
+        "content": content,
+        "status": "success",
+        "niche": request.niche,
+        "topic": request.topic,
+        "platform": request.platform
+    }
 
 if __name__ == "__main__":
     import uvicorn
